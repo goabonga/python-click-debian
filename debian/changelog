@@ -1,3 +1,17 @@
+helloworld (0.1.0-1) stable; urgency=medium
+
+  * chore: Add pyproject manifest
+  * feat(cli): Add package version marker
+  * feat(cli): Scaffold click hello-world entry point
+  * test(cli): Cover default, named, and help output
+  * chore(debian): Declare native source format
+  * chore(debian): Add maintainer control file
+  * chore(debian): Add debhelper rules
+  * chore(debian): Add copyright file
+  * chore(debian): Add initial changelog stanza
+
+ -- Chris <goabonga@pm.me>  Mon, 04 May 2026 17:30:57 +0000
+
 helloworld (0.0.0) UNRELEASED; urgency=medium
 
   * Initial scaffold.
