@@ -1,0 +1,31 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Chris <goabonga@pm.me>
+
+[project]
+name = "helloworld"
+version = "0.0.0"
+description = "A tiny click hello-world CLI shipped as a Debian package."
+readme = "README.md"
+authors = [{ name = "Chris", email = "goabonga@pm.me" }]
+license = { text = "MIT" }
+requires-python = ">=3.11"
+dependencies = ["click>=8.0"]
+
+[project.scripts]
+helloworld = "helloworld.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/goabonga/python-click-debian"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+]
