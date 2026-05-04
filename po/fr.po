@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Chris <goabonga@pm.me>
+# French translation of helloworld.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: helloworld\n"
+"Report-Msgid-Bugs-To: goabonga@pm.me\n"
+"POT-Creation-Date: 2026-05-04 12:00+0000\n"
+"PO-Revision-Date: 2026-05-04 12:00+0000\n"
+"Last-Translator: Chris <goabonga@pm.me>\n"
+"Language-Team: French <goabonga@pm.me>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/helloworld/cli.py
+#, python-format
+msgid "Hello, %(name)s!"
+msgstr "Bonjour, %(name)s !"
