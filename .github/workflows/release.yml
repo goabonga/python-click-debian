@@ -1,0 +1,116 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Chris <goabonga@pm.me>
+
+# Release pipeline driven by multicz. Builds a native .deb and attaches
+# it to the GitHub Release whose tag multicz just created.
+#
+# Trigger: completion of the `ci` workflow on main (success only).
+# Skip when: HEAD is the bot's own release commit (loop guard).
+# Flow:
+#   1. install multicz via the action
+#   2. attribute the release commit to the upstream pusher
+#   3. multicz plan -> exit cleanly if nothing pending
+#   4. multicz bump --commit --tag --push (prepends debian/changelog,
+#      tags vX.Y.Z, pushes back to main)
+#   5. install Debian build toolchain, run dpkg-buildpackage
+#   6. cut a GitHub Release with multicz release-notes as the body, and
+#      upload the .deb / .changes / .buildinfo artefacts
+
+name: release
+
+on:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: >-
+      ${{
+        github.event.workflow_run.conclusion == 'success' &&
+        !startsWith(github.event.workflow_run.head_commit.message, 'chore(release)')
+      }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_PAT || secrets.GITHUB_TOKEN }}
+
+      - uses: goabonga/multicz-action@v1
+
+      - name: Configure git
+        run: |
+          NAME="${{ github.event.workflow_run.head_commit.author.name }}"
+          EMAIL="${{ github.event.workflow_run.head_commit.author.email }}"
+          git config user.name  "${NAME:-github-actions[bot]}"
+          git config user.email "${EMAIL:-41898282+github-actions[bot]@users.noreply.github.com}"
+
+      - name: Plan
+        id: plan
+        run: |
+          set -euo pipefail
+          PAYLOAD=$(multicz plan --output json)
+          if [ "$(echo "$PAYLOAD" | jq '.bumps | length')" = "0" ]; then
+            echo "release=false" >> "$GITHUB_OUTPUT"
+            echo "no release pending"
+          else
+            echo "release=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Bump, commit, tag, push
+        if: steps.plan.outputs.release == 'true'
+        run: multicz bump --commit --tag --push
+
+      - name: Capture new tag
+        if: steps.plan.outputs.release == 'true'
+        id: tag
+        run: |
+          set -euo pipefail
+          TAG=$(git tag --points-at HEAD --sort=-v:refname \
+                  | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -1)
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+
+      - name: Install Debian build toolchain
+        if: steps.plan.outputs.release == 'true'
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            devscripts debhelper dh-python pybuild-plugin-pyproject \
+            python3-all python3-setuptools python3-click python3-pytest
+
+      - name: Build .deb
+        if: steps.plan.outputs.release == 'true'
+        run: |
+          set -euo pipefail
+          dpkg-buildpackage -us -uc -b
+          mkdir -p dist
+          mv ../*.deb ../*.changes ../*.buildinfo dist/ 2>/dev/null || true
+          ls -la dist/
+
+      - name: Generate release notes
+        if: steps.plan.outputs.release == 'true'
+        id: notes
+        uses: goabonga/multicz-action/release-notes@v1
+        with:
+          tag: ${{ steps.tag.outputs.tag }}
+
+      - name: Create GitHub Release
+        if: steps.plan.outputs.release == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NOTES: ${{ steps.notes.outputs.stdout }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$NOTES" > /tmp/notes.md
+          gh release create "$TAG" \
+            --title "$TAG" \
+            --notes-file /tmp/notes.md \
+            dist/*
