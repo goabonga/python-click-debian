@@ -83,7 +83,8 @@ jobs:
           set -euo pipefail
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
-            devscripts debhelper dh-python pybuild-plugin-pyproject \
+            build-essential devscripts debhelper dh-python \
+            pybuild-plugin-pyproject \
             python3-all python3-setuptools python3-click python3-pytest
 
       - name: Build .deb
