@@ -1,0 +1,60 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Chris <goabonga@pm.me>
+
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install package + dev deps
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install pytest
+
+      - name: Run pytest
+        run: pytest -q
+
+  build-deb:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Debian build toolchain
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            devscripts debhelper dh-python pybuild-plugin-pyproject \
+            python3-all python3-setuptools python3-click python3-pytest
+
+      - name: Build .deb
+        run: dpkg-buildpackage -us -uc -b
+
+      - name: Show built artefacts
+        run: ls -la ../*.deb
+
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: goabonga/multicz-action@v1
+
+      - name: Validate multicz.toml
+        run: multicz validate --strict
