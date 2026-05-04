@@ -13,6 +13,28 @@ helloworld
 helloworld --name alice
 ```
 
+## Internationalisation
+
+The greeting is translated via gettext. Set `$LANGUAGE` (or `$LC_ALL` /
+`$LANG`) before invoking:
+
+```bash
+LANGUAGE=fr helloworld --name Alice
+# Bonjour, Alice !
+
+LANGUAGE=es helloworld --name Alice
+# ¡Hola, Alice!
+```
+
+Source catalogues live under `po/` (`po/fr.po`, `po/es.po`); compiled
+`.mo` files ship inside the Python package at
+`src/helloworld/locale/<lang>/LC_MESSAGES/`. Regenerate them with:
+
+```bash
+sudo apt install gettext
+make -C po all
+```
+
 ## Build the .deb
 
 Requires the standard Debian packaging toolchain:
