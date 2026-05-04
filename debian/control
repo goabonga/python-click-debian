@@ -1,0 +1,23 @@
+Source: helloworld
+Section: utils
+Priority: optional
+Maintainer: Chris <goabonga@pm.me>
+Build-Depends: debhelper-compat (= 13),
+               dh-python,
+               pybuild-plugin-pyproject,
+               python3-all,
+               python3-click,
+               python3-pytest,
+               python3-setuptools
+Standards-Version: 4.6.2
+Homepage: https://github.com/goabonga/python-click-debian
+Rules-Requires-Root: no
+
+Package: helloworld
+Architecture: all
+Depends: ${python3:Depends}, ${misc:Depends}, python3-click
+Description: tiny click hello-world CLI
+ helloworld is a minimal command-line program built with Click that
+ prints a friendly greeting. It serves as a reference template for
+ packaging Python CLIs as native Debian packages with pybuild and
+ dh-python.
