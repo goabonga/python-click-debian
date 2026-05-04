@@ -7,3 +7,10 @@ export PYBUILD_NAME = helloworld
 
 %:
 	dh $@ --with python3 --buildsystem=pybuild
+
+# Recompile gettext catalogues from the .po sources before pybuild
+# packages the wheel, so the shipped .mo always matches the .po sources
+# rather than whatever is committed in the tree.
+override_dh_auto_build:
+	$(MAKE) -C po mo
+	dh_auto_build
