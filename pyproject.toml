@@ -24,6 +24,11 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+# Ship compiled gettext catalogues alongside the Python package so
+# `pip install` and `apt install` both surface translations.
+helloworld = ["locale/*/LC_MESSAGES/*.mo"]
+
 [dependency-groups]
 dev = [
     "pytest>=8.0",
