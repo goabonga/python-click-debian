@@ -1,0 +1,22 @@
+# multicz config: single Python CLI shipped as a native Debian package.
+#
+# `format = "debian"` makes multicz read the version from the topmost
+# stanza of debian/changelog and prepend a new stanza on every bump.
+# `bump_files` and `mirrors` are deliberately rejected by multicz in
+# debian mode — debian/changelog is the single source of truth.
+
+[project]
+commit_convention = "conventional"
+tag_format        = "v{version}"
+initial_version   = "0.0.0"
+
+[components.helloworld]
+paths  = ["src/**", "pyproject.toml", "debian/**", "tests/**"]
+format = "debian"
+
+[components.helloworld.debian]
+changelog       = "debian/changelog"
+distribution    = "stable"
+urgency         = "medium"
+maintainer      = "Chris <goabonga@pm.me>"
+debian_revision = 1
