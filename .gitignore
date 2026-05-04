@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Chris <goabonga@pm.me>
+
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# debuild artefacts (live in the parent dir; we git-init the project,
+# the parent is outside the repo, but `dpkg-buildpackage` also drops
+# `debian/files`, `debian/.debhelper/` etc inside)
+debian/.debhelper/
+debian/files
+debian/*.substvars
+debian/*.debhelper
+debian/*.log
+debian/*.helloworld
+debian/helloworld/
+
+.venv/
+.pytest_cache/
+.ruff_cache/
