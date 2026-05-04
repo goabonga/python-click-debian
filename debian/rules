@@ -1,0 +1,9 @@
+#!/usr/bin/make -f
+
+# debhelper sequencer with dh-python + pybuild — picks up pyproject.toml
+# automatically thanks to pybuild-plugin-pyproject.
+
+export PYBUILD_NAME = helloworld
+
+%:
+	dh $@ --with python3 --buildsystem=pybuild
