@@ -11,8 +11,9 @@ tag_format        = "v{version}"
 initial_version   = "0.0.0"
 
 [components.helloworld]
-paths  = ["src/**", "pyproject.toml", "debian/**", "tests/**"]
-format = "debian"
+paths     = ["src/**", "pyproject.toml", "debian/**", "tests/**"]
+format    = "debian"
+changelog = "CHANGELOG.md"
 
 [components.helloworld.debian]
 changelog       = "debian/changelog"
