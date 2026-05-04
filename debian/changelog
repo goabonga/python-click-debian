@@ -1,3 +1,9 @@
+helloworld (0.2.0-1) stable; urgency=medium
+
+  * feat(cli): Translate greeting via gettext at call time
+
+ -- Chris <goabonga@pm.me>  Mon, 04 May 2026 18:58:53 +0000
+
 helloworld (0.1.0-1) stable; urgency=medium
 
   * chore: Add pyproject manifest
