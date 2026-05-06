@@ -1,9 +1,10 @@
 # multicz config: single Python CLI shipped as a native Debian package.
 #
-# `format = "debian"` makes multicz read the version from the topmost
-# stanza of debian/changelog and prepend a new stanza on every bump.
-# `bump_files` and `mirrors` are deliberately rejected by multicz in
-# debian mode — debian/changelog is the single source of truth.
+# No `bump_files` is declared, so the `debian-changelog` writer claims
+# the version-source role: multicz reads the upstream version from the
+# topmost stanza of debian/changelog and prepends a new stanza on every
+# bump. The top-level `changelog = "CHANGELOG.md"` adds a parallel
+# keep-a-changelog markdown file for human readers.
 
 [project]
 commit_convention = "conventional"
@@ -12,11 +13,11 @@ initial_version   = "0.0.0"
 
 [components.helloworld]
 paths     = ["src/**", "pyproject.toml", "debian/**", "tests/**"]
-format    = "debian"
 changelog = "CHANGELOG.md"
 
-[components.helloworld.debian]
-changelog       = "debian/changelog"
+[[components.helloworld.writers]]
+type            = "debian-changelog"
+file            = "debian/changelog"
 distribution    = "stable"
 urgency         = "medium"
 maintainer      = "Chris <goabonga@pm.me>"
